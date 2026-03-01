@@ -1,0 +1,16 @@
+# Ignore virtual environment folder
+exfil_env/
+
+# Ignore massive packet capture files
+*.pcap
+*.pcapng
+
+# Ignore the trained model (users should train their own)
+*.pkl
+
+# Ignore dataset CSVs
+*.csv
+
+# Python cache
+__pycache__/
+*.pyc
