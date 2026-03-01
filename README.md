@@ -32,26 +32,26 @@ Data Handling: Pandas, NumPy
 
 Open your terminal and clone this project:
 
-git clone [https://github.com/YOUR_USERNAME/YOUR_REPOSITORY_NAME.git](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY_NAME.git)
+git clone [https://github.com/Santhosh939s/CryptoFlow-IDS]
 cd YOUR_REPOSITORY_NAME
 
 
-(Note: Replace the URL with the actual GitHub repository link).
+
 
 2. Install System Dependencies
 
 Update your package list and install the required system-level networking tools and virtual environment managers:
 
-sudo apt update
-sudo apt install python3-venv tcpdump netcat-traditional
+`sudo apt update
+sudo apt install python3-venv tcpdump netcat-traditional`
 
 
 3. Set Up the Python Virtual Environment
 
 To avoid conflicts with Ubuntu's system packages, create and activate an isolated Python environment:
 
-python3 -m venv exfil_env
-source exfil_env/bin/activate
+`python3 -m venv exfil_env
+source exfil_env/bin/activate`
 
 
 (You must run source exfil_env/bin/activate every time you open a new terminal to work on this project).
@@ -60,7 +60,7 @@ source exfil_env/bin/activate
 
 With the environment activated, install the required Python packages:
 
-pip install scapy scikit-learn pandas numpy joblib
+`pip install scapy scikit-learn pandas numpy joblib`
 
 
 🗄️ Dataset Collection
@@ -82,7 +82,7 @@ Find your active Wi-Fi interface name (usually wlo1 or wlan0) using the ip a com
 
 Run a packet capture for 5-10 minutes while browsing the web:
 
-sudo tcpdump -i wlo1 -w my_benign_traffic.pcap
+`sudo tcpdump -i wlo1 -w my_benign_traffic.pcap`
 
 
 Press Ctrl+C to stop the capture.
@@ -95,13 +95,13 @@ Before the detector can run, you must extract the side-channel features and trai
 
 1. Extract Features: Run the extraction script to calculate Shannon Entropy, Size, and Port, and compile them into a balanced dataset.csv:
 
-python3 pcap_to_csv.py
+`python3 pcap_to_csv.py`
 
 
 2. Train the Model:
 Train the Random Forest Classifier. The script will save the trained model as traffic_classifier.pkl if the accuracy exceeds 95%.
 
-python3 train_model.py
+`python3 train_model.py`
 
 
 Phase 2: Real-Time Detection Simulation Lab
@@ -111,13 +111,13 @@ To test the real-time detection capabilities, you will simulate a local network 
 Terminal 1: The Target Server
 Set up a dummy server to listen for the exfiltrated data:
 
-nc -l 8443
+`nc -l 8443`
 
 
 Terminal 2: The Hybrid AI Detector
 Start the real-time packet sniffer. It will monitor both the local loopback interface (lo) for the simulation, and your live Wi-Fi interface (wlo1) for real traffic:
 
-sudo ./exfil_env/bin/python detector.py
+`sudo ./exfil_env/bin/python detector.py`
 
 
 Note: The detector will print [SAFE] for normal traffic. Once a threat is detected, it will suppress safe logs to highlight the [RED ALERT] warnings to prevent alert fatigue.
@@ -125,7 +125,7 @@ Note: The detector will print [SAFE] for normal traffic. Once a threat is detect
 Terminal 3: The Attacker Simulation
 Run the victim script, which generates highly random, cryptographically simulated payloads (high entropy) and attempts to exfiltrate them to the target server:
 
-python3 victim.py
+`python3 victim.py`
 
 
 Watch Terminal 2 instantly detect and flag the malicious packets with red alerts!
