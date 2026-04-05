@@ -1,4 +1,4 @@
-Detection of Encrypted Data Exfiltration Using Cryptographic & Network Analysis
+Catching Data Breaches Without Breaking Encryption on Network Traffic
 
 📌 Project Overview
 
