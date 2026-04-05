@@ -44,16 +44,18 @@ cd YOUR_FOLDER_NAME
 
 Update your package list and install the required system-level networking tools and virtual environment managers:
 
-1.`sudo apt update`
-2.`sudo apt install python3-venv tcpdump netcat-traditional`
+a.`sudo apt update`
+
+b.`sudo apt install python3-venv tcpdump netcat-traditional`
 
 
 3. Set Up the Python Virtual Environment
 
 To avoid conflicts with Ubuntu's system packages, create and activate an isolated Python environment:
 
-`python3 -m venv exfil_env
-source exfil_env/bin/activate`
+a.`python3 -m venv exfil_env`
+
+b.`source exfil_env/bin/activate`
 
 
 (You must run source exfil_env/bin/activate every time you open a new terminal to work on this project).
