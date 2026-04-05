@@ -44,8 +44,8 @@ cd YOUR_FOLDER_NAME
 
 Update your package list and install the required system-level networking tools and virtual environment managers:
 
-`sudo apt update
-sudo apt install python3-venv tcpdump netcat-traditional`
+`sudo apt update`
+`sudo apt install python3-venv tcpdump netcat-traditional`
 
 
 3. Set Up the Python Virtual Environment
