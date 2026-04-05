@@ -117,7 +117,7 @@ To test the real-time detection capabilities, you will simulate a local network 
 Terminal 1: The Target Server
 Set up a dummy server to listen for the exfiltrated data:
 
-`nc -l 8443`
+`sudo nc -4 -l 127.0.0.1 443`
 
 
 Terminal 2: The Hybrid AI Detector
