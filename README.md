@@ -112,7 +112,7 @@ Train the Random Forest Classifier. The script will save the trained model as tr
 
 Phase 2: Real-Time Detection Simulation Lab
 
-To test the real-time detection capabilities, you will simulate a local network attack. You need three separate terminal windows open for this. Remember to activate the virtual environment (source exfil_env/bin/activate) in the attacker terminal.
+To test the real-time detection capabilities, you will simulate a local network attack. You need three separate terminal windows open for this. Remember to activate the virtual environment (`source exfil_env/bin/activate`) in the attacker terminal.
 
 Terminal 1: The Target Server
 Set up a dummy server to listen for the exfiltrated data:
