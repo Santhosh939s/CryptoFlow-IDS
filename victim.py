@@ -4,7 +4,7 @@ import time
 
 def simulate_exfiltration():
     target_ip = "127.0.0.1"
-    target_port = 8443
+    target_port = 443  # Standard HTTPS port to trigger the AI
 
     print(f"[*] Initiating simulated exfiltration to {target_ip}:{target_port}")
     
@@ -13,17 +13,17 @@ def simulate_exfiltration():
         s.connect((target_ip, target_port))
         
         for i in range(5):
-            print(f"[-] Sending malicious high-entropy chunk {i+1}...")
-            # Generate 1024 bytes of cryptographically random data
+            print(f"[-] Sending malicious high-entropy chunk {i+1}/5...")
+            # Changed to 1024 bytes. Fits in ONE packet = ONE alert per loop!
             malicious_payload = os.urandom(1024) 
             s.send(malicious_payload)
-            time.sleep(1)
+            time.sleep(1) # Wait 1 second between attacks for dramatic effect
             
         s.close()
         print("[+] Exfiltration simulation complete.")
         
     except ConnectionRefusedError:
-        print("[!] Connection failed. Is Terminal 1 (netcat) running?")
+        print("[!] Connection failed. Is Terminal 1 running: sudo nc -4 -l 127.0.0.1 443 ?")
 
 if __name__ == "__main__":
     simulate_exfiltration()
