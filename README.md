@@ -37,6 +37,8 @@ cd YOUR_FOLDER_NAME
 `git clone https://github.com/Santhosh939s/CryptoFlow-IDS`
 
 
+`cd CryptoFlow-IDS`
+
 
 
 
