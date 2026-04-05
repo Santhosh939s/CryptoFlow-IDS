@@ -32,8 +32,10 @@ Data Handling: Pandas, NumPy
 
 Open your terminal and clone this project:
 
-git clone [https://github.com/Santhosh939s/CryptoFlow-IDS]
-cd YOUR_REPOSITORY_NAME
+
+cd YOUR_FOLDER_NAME
+`git clone https://github.com/Santhosh939s/CryptoFlow-IDS`
+
 
 
 
