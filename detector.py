@@ -58,9 +58,12 @@ def process_packet(packet):
                 prediction = classifier.predict(feature_vector)[0]
                 
                 # Triggers on AI prediction OR pure encrypted data hitting port 443
+                # Triggers on AI prediction OR pure encrypted data hitting port 443
                 if (prediction == 1 and entropy > 7.0) or (entropy > 7.5 and port == 443):
                     print(f"\n{RED}🚨 [RED ALERT] MALICIOUS EXFILTRATION BLOCKED! 🚨{RESET}")
-                    print(f"{RED}➜ Threat Detected on Port: {port} | Entropy: {entropy:.2f} | Size: {size} bytes{RESET}\n")
+                    print(f"{RED}➜ Trigger Features: Port: {port} | Entropy: {entropy:.2f} | Size: {size} bytes{RESET}")
+                    # THIS IS YOUR EXPLAINABILITY LINE:
+                    print(f"{RED}➜ AI Explanation: High payload randomness (Entropy {entropy:.2f}) bypassing standard web port. High probability of encrypted data smuggling.{RESET}\n")
                 else:
                     # Print high-entropy safe packets (like normal encrypted web browsing)
                     if current_time - last_print_time > 0.5:
