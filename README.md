@@ -88,7 +88,22 @@ Find your active Wi-Fi interface name (usually wlo1 or wlan0) using the ip a com
 
 Run a packet capture for 5-10 minutes while browsing the web:
 
-`sudo tcpdump -i wlo1 -w my_benign_traffic.pcap`
+Step 1: Find your active network interface
+Run the following command in your terminal to list all available network interfaces on your machine:
+
+Bash
+`tcpdump -D`
+Look at the output and find the interface that says [Up, Running] and is actively handling your internet connection (usually starting with a w for Wi-Fi or e for Ethernet).
+
+Step 2: Run the capture command
+Once you know your interface name, replace <YOUR_INTERFACE_NAME> in the command below with your specific name.
+
+Bash
+`sudo tcpdump -i <YOUR_INTERFACE_NAME> -w my_benign_traffic.pcap`
+Example: If Step 1 showed that your active Wi-Fi interface is wlp0s20f3, your final command will look like this:
+
+Bash
+`sudo tcpdump -i wlp0s20f3 -w my_benign_traffic.pcap`
 
 
 Press Ctrl+C to stop the capture.
