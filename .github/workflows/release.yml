@@ -43,6 +43,7 @@ jobs:
         run: |
           cd build
           python -m PyInstaller --clean pyinstaller.spec
+          Get-ChildItem -Recurse dist
 
       - name: Install Inno Setup
         shell: pwsh
@@ -55,12 +56,16 @@ jobs:
           if (-not (Test-Path "build\Output")) {
             New-Item -ItemType Directory -Path "build\Output"
           }
-          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" build\installer.iss
+          $iscc = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) {
+            $iscc = (Get-Command iscc).Source
+          }
+          & $iscc build\installer.iss
 
       - name: Package Portable ZIP Archive
         shell: pwsh
         run: |
-          Compress-Archive -Path dist\CryptoFlow-IDS\* -DestinationPath build\Output\CryptoFlow-IDS-Portable.zip -Force
+          Compress-Archive -Path build\dist\CryptoFlow-IDS\* -DestinationPath build\Output\CryptoFlow-IDS-Portable.zip -Force
 
       - name: Verify Built Release Artifacts
         shell: pwsh
