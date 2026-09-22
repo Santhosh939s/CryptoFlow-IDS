@@ -2,7 +2,7 @@
 ; Produces CryptoFlow-IDS-Setup.exe for GitHub Releases
 
 #define MyAppName "CryptoFlow-IDS"
-#define MyAppVersion "2.0.0"
+#define MyAppVersion "2.1.0"
 #define MyAppPublisher "CryptoFlow Security"
 #define MyAppURL "https://github.com/Santhosh939s/CryptoFlow-IDS"
 #define MyAppExeName "CryptoFlow-IDS.exe"

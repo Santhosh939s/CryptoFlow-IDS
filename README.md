@@ -3,7 +3,7 @@
 # 🛡️ CryptoFlow-IDS
 ### Next-Generation Encrypted Traffic Intrusion Detection System & Cyber HUD
 
-[![Release](https://img.shields.io/badge/Release-v2.0.0-00f2fe?style=for-the-badge&logo=windows)](https://github.com/Santhosh939s/CryptoFlow-IDS/releases/tag/v2.0.0)
+[![Release](https://img.shields.io/badge/Release-v2.1.0-00f2fe?style=for-the-badge&logo=windows)](https://github.com/Santhosh939s/CryptoFlow-IDS/releases/tag/v2.1.0)
 [![Build Status](https://img.shields.io/badge/Build-Automated%20CI%2FCD-success?style=for-the-badge&logo=githubactions)](https://github.com/Santhosh939s/CryptoFlow-IDS/actions)
 [![Python](https://img.shields.io/badge/Python-3.8%2B-3776ab?style=for-the-badge&logo=python)](https://www.python.org/)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-green?style=for-the-badge)](https://github.com/Santhosh939s/CryptoFlow-IDS)
@@ -12,10 +12,10 @@
 <br/>
 
 ### 📥 Instant Single-Click Downloads
-👉 **[Download Windows Installer (`CryptoFlow-IDS-Setup.exe`)](https://github.com/Santhosh939s/CryptoFlow-IDS/releases/download/v2.0.0/CryptoFlow-IDS-Setup.exe)** 👈  
+👉 **[Download Windows Installer (`CryptoFlow-IDS-Setup.exe`)](https://github.com/Santhosh939s/CryptoFlow-IDS/releases/download/v2.1.0/CryptoFlow-IDS-Setup.exe)** 👈  
 *Includes Desktop Shortcut, Start Menu Entry, and Npcap Driver Verification*
 
-📦 **[Download Standalone Portable ZIP (`CryptoFlow-IDS-Portable.zip`)](https://github.com/Santhosh939s/CryptoFlow-IDS/releases/download/v2.0.0/CryptoFlow-IDS-Portable.zip)**  
+📦 **[Download Standalone Portable ZIP (`CryptoFlow-IDS-Portable.zip`)](https://github.com/Santhosh939s/CryptoFlow-IDS/releases/download/v2.1.0/CryptoFlow-IDS-Portable.zip)**  
 *No installation required — extract and run immediately.*
 
 </div>
