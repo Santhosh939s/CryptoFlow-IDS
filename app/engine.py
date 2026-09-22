@@ -343,24 +343,23 @@ class IDSEngine:
         protocol = data.get("protocol", "TCP")
         is_quic_flag = data.get("is_quic", False)
         confidence = data.get("confidence", 95.0) / 100.0
-
         payload_sample = data.get("payload_sample", b"")
 
-        # 1. Threat Intelligence & IP Enrichment
-        intel = intel_provider.enrich_ip(src_ip, entropy)
+        # 1. Zero-Latency Firewall Mitigation FIRST (<1ms)
+        mitigated = self.mitigator.block_ip(src_ip)
+        if mitigated:
+            self.stats["blocked_count"] += 1
+            db.log_blocked_ip(src_ip, reason=f"High-entropy exfiltration ({entropy:.2f})")
+
+        # 2. Instant In-Memory Threat Intelligence (0ms network delay)
+        intel = intel_provider.get_fast_intel(src_ip, entropy)
         country = intel.get("country", "Local Lab / Simulation")
         country_code = intel.get("country_code", "LOC")
         flag = intel.get("flag", "🧪")
         asn = intel.get("asn", "AS-PRIVATE")
         threat_score = intel.get("threat_score", 85)
 
-        # 2. Execute firewall mitigation with atomic caching
-        mitigated = self.mitigator.block_ip(src_ip)
-        if mitigated:
-            self.stats["blocked_count"] += 1
-            db.log_blocked_ip(src_ip, reason=f"High-entropy exfiltration ({entropy:.2f})")
-
-        # 3. Automated Forensic Incident PCAP Capture
+        # 3. Asynchronous Buffered Forensic Incident PCAP Enqueue (<0.01ms)
         now_ts = int(time.time())
         pcap_file = forensics.record_incident_packet(
             threat_id=now_ts,
@@ -371,7 +370,7 @@ class IDSEngine:
             protocol=protocol
         )
 
-        # 4. Persist to SQLite
+        # 4. Immediate Persistence to SQLite
         threat_id = db.log_threat(
             src_ip=src_ip,
             dst_ip=dst_ip,
@@ -391,6 +390,7 @@ class IDSEngine:
             pcap_file=pcap_file
         )
 
+        # 5. Broadcast Real-Time Alert to WebSockets Instantly
         threat_alert = {
             "type": "threat_alert",
             "timestamp": time.time(),
@@ -416,6 +416,43 @@ class IDSEngine:
             }
         }
         self._broadcast(threat_alert)
+
+        # 6. Defer Remote HTTP Geolocation/ASN Lookup to Background Thread
+        if not intel_provider.is_resolved(src_ip):
+            intel_provider.enqueue_lookup(
+                threat_id=threat_id,
+                ip=src_ip,
+                entropy=entropy,
+                callback=self._on_async_intel_resolved
+            )
+
+    def _on_async_intel_resolved(self, threat_id: int, intel: Dict[str, Any]):
+        """Callback invoked by background intel worker once external GeoIP completes."""
+        try:
+            db.update_threat_intel(
+                threat_id=threat_id,
+                country=intel.get("country", "External Host"),
+                country_code=intel.get("country_code", "EXT"),
+                flag=intel.get("flag", "🌐"),
+                asn=intel.get("asn", "AS-REMOTE"),
+                threat_score=intel.get("threat_score", 85)
+            )
+            # Emit live patch update to HUD via WebSocket
+            self._broadcast({
+                "type": "threat_intel_update",
+                "timestamp": time.time(),
+                "data": {
+                    "id": threat_id,
+                    "ip": intel.get("ip"),
+                    "country": intel.get("country"),
+                    "country_code": intel.get("country_code"),
+                    "flag": intel.get("flag"),
+                    "asn": intel.get("asn"),
+                    "threat_score": intel.get("threat_score")
+                }
+            })
+        except Exception as e:
+            logger.error(f"Error handling resolved async intel: {e}")
 
     def get_status(self) -> Dict[str, Any]:
         now = time.time()

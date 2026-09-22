@@ -155,6 +155,8 @@ function handleWsMessage(msg) {
         updateEngineState(msg.data.status === 'running');
     } else if (msg.type === 'ip_unblocked') {
         fetchBlockedIps();
+    } else if (msg.type === 'threat_intel_update') {
+        updateThreatCardIntel(msg.data);
     }
 }
 
@@ -216,6 +218,9 @@ function prependThreatCard(threat) {
     const list = document.getElementById('threatFeedList');
     const card = document.createElement('div');
     card.className = 'threat-card';
+    if (threat.id) {
+        card.id = 'threat-card-' + threat.id;
+    }
 
     const protoPill = threat.is_quic 
         ? '<span class="pill pill-quic">QUIC (UDP)</span>' 
@@ -275,6 +280,25 @@ function prependThreatCard(threat) {
     list.insertBefore(card, list.firstChild);
     while (list.children.length > 30) {
         list.removeChild(list.lastChild);
+    }
+}
+
+function updateThreatCardIntel(data) {
+    if (!data || !data.id) return;
+    const card = document.getElementById('threat-card-' + data.id);
+    if (!card) return;
+
+    const intelBadge = card.querySelector('.intel-badge');
+    if (intelBadge) {
+        const flag = data.flag || '🌐';
+        const country = data.country || 'External Host';
+        const asn = data.asn || 'AS-REMOTE';
+        intelBadge.innerHTML = `${flag} ${country} • <span style="font-family: var(--font-mono); color: var(--primary);">${asn}</span>`;
+    }
+
+    const scoreBadge = card.querySelector('.score-badge');
+    if (scoreBadge && data.threat_score !== undefined) {
+        scoreBadge.innerText = `SEV: ${data.threat_score}/100`;
     }
 }
 

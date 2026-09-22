@@ -108,6 +108,17 @@ class Database:
             cursor.execute("UPDATE threat_logs SET pcap_file = ? WHERE id = ?", (pcap_file, threat_id))
             conn.commit()
 
+    def update_threat_intel(self, threat_id: int, country: str, country_code: str,
+                            flag: str, asn: str, threat_score: int):
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                UPDATE threat_logs
+                SET country = ?, country_code = ?, flag = ?, asn = ?, threat_score = ?
+                WHERE id = ?
+            """, (country, country_code, flag, asn, threat_score, threat_id))
+            conn.commit()
+
     def get_recent_threats(self, limit: int = 50) -> List[Dict[str, Any]]:
         with self._get_connection() as conn:
             cursor = conn.cursor()
