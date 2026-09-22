@@ -1,0 +1,532 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+    --bg-base: #060911;
+    --bg-surface: #0c1220;
+    --bg-card: rgba(16, 24, 40, 0.75);
+    --bg-glass: rgba(18, 28, 48, 0.6);
+    --border-color: rgba(64, 93, 140, 0.25);
+    --border-glow: rgba(0, 242, 254, 0.35);
+
+    --primary: #00f2fe;
+    --primary-glow: rgba(0, 242, 254, 0.4);
+    --accent: #4facfe;
+
+    --safe: #00f090;
+    --safe-glow: rgba(0, 240, 144, 0.3);
+    --warning: #ffb800;
+    --warning-glow: rgba(255, 184, 0, 0.3);
+    --danger: #ff2a5f;
+    --danger-glow: rgba(255, 42, 95, 0.5);
+
+    --text-main: #f0f4fc;
+    --text-muted: #8292ab;
+    --text-dim: #4d5d75;
+
+    --font-sans: 'Inter', -apple-system, sans-serif;
+    --font-hud: 'Rajdhani', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --shadow-card: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-base);
+    background-image: 
+        radial-gradient(circle at 15% 15%, rgba(0, 242, 254, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(255, 42, 95, 0.04) 0%, transparent 45%),
+        linear-gradient(rgba(12, 18, 32, 0.4) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(12, 18, 32, 0.4) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 30px 30px, 30px 30px;
+    color: var(--text-main);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+/* Glassmorphism Panel */
+.glass-panel {
+    background: var(--bg-card);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.glass-panel:hover {
+    border-color: rgba(64, 110, 170, 0.4);
+}
+
+/* Top App Header / HUD */
+header.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 28px;
+    background: rgba(10, 16, 28, 0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.brand-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 20px var(--primary-glow);
+}
+
+.brand-icon svg {
+    width: 22px;
+    height: 22px;
+    fill: #060911;
+}
+
+.brand h1 {
+    font-family: var(--font-hud);
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    background: linear-gradient(90deg, #ffffff 40%, var(--primary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.brand .version-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--primary);
+    background: rgba(0, 242, 254, 0.1);
+    padding: 2px 7px;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 242, 254, 0.3);
+}
+
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* Threat Level Indicator */
+.threat-level-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-family: var(--font-hud);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.8px;
+    background: rgba(0, 240, 144, 0.1);
+    color: var(--safe);
+    border: 1px solid var(--safe);
+    transition: all 0.3s ease;
+}
+
+.threat-level-badge.critical {
+    background: rgba(255, 42, 95, 0.15);
+    color: var(--danger);
+    border-color: var(--danger);
+    box-shadow: 0 0 20px var(--danger-glow);
+    animation: alert-pulse 1.2s infinite;
+}
+
+.pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: currentColor;
+}
+
+@keyframes alert-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.08); }
+}
+
+/* Control Select & Buttons */
+.iface-select {
+    background: var(--bg-surface);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    padding: 8px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-family: var(--font-sans);
+    outline: none;
+    cursor: pointer;
+    min-width: 220px;
+}
+
+.iface-select:focus {
+    border-color: var(--primary);
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    font-family: var(--font-hud);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+    color: #060911;
+    box-shadow: 0 4px 15px var(--primary-glow);
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px var(--primary-glow);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #ff2a5f 0%, #ff5e62 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 15px var(--danger-glow);
+}
+
+.btn-danger:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px var(--danger-glow);
+}
+
+.btn-secondary {
+    background: rgba(30, 44, 70, 0.6);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+    background: rgba(40, 60, 95, 0.7);
+    border-color: var(--primary);
+}
+
+/* Main Dashboard Container */
+.dashboard-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Metrics Cards Row */
+.metrics-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+}
+
+.metric-card {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+}
+
+.metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--primary);
+}
+
+.metric-card.threats::before { background: var(--danger); }
+.metric-card.blocked::before { background: var(--warning); }
+.metric-card.quic::before { background: #9b51e0; }
+
+.metric-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+
+.metric-data h4 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.metric-data .value {
+    font-family: var(--font-hud);
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+    color: #ffffff;
+}
+
+.metric-data .sub-text {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 4px;
+}
+
+/* Charts Grid */
+.charts-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+}
+
+@media (max-width: 1024px) {
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.chart-card {
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.card-header h3 {
+    font-family: var(--font-hud);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: 240px;
+}
+
+/* Split View: Live Threats & Traffic Feed */
+.content-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 20px;
+}
+
+@media (max-width: 1024px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Threat Alert Cards */
+.threat-feed-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 380px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.threat-card {
+    background: rgba(255, 42, 95, 0.08);
+    border: 1px solid rgba(255, 42, 95, 0.35);
+    border-radius: var(--radius-md);
+    padding: 14px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    animation: slide-in 0.3s ease;
+}
+
+@keyframes slide-in {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.threat-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.threat-badge {
+    font-family: var(--font-hud);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--danger);
+    background: rgba(255, 42, 95, 0.2);
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.6px;
+}
+
+.threat-time {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.threat-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 8px;
+    font-size: 12px;
+}
+
+.threat-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.threat-field span:first-child {
+    font-size: 10px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+}
+
+.threat-field span:last-child {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    color: #ffffff;
+}
+
+/* Live Traffic Stream Table */
+.traffic-table-wrapper {
+    max-height: 380px;
+    overflow-y: auto;
+}
+
+table.cyber-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    text-align: left;
+}
+
+table.cyber-table th {
+    padding: 10px 14px;
+    background: rgba(20, 30, 50, 0.6);
+    color: var(--text-muted);
+    font-family: var(--font-hud);
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+}
+
+table.cyber-table td {
+    padding: 9px 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    font-family: var(--font-mono);
+}
+
+table.cyber-table tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* Protocol Pills */
+.pill {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.pill-quic { background: rgba(155, 81, 224, 0.2); color: #bb6bd9; border: 1px solid #bb6bd9; }
+.pill-tls { background: rgba(0, 242, 254, 0.15); color: var(--primary); border: 1px solid var(--primary); }
+.pill-tcp { background: rgba(80, 100, 140, 0.3); color: #c4d1e6; }
+.pill-threat { background: rgba(255, 42, 95, 0.25); color: var(--danger); font-weight: 700; }
+
+/* In-App Simulation Lab Panel */
+.sim-panel {
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.sim-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+.sim-status-box {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--primary);
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(10, 16, 28, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(64, 93, 140, 0.4);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+}

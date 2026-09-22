@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoFlow-IDS — Encrypted Traffic Cyber Defense HUD</title>
+    <meta name="description" content="Next-Generation Encrypted Traffic Intrusion Detection System and Automated Firewall Mitigation">
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <!-- Chart.js for real-time telemetry -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+    <!-- App Header / Cyber HUD -->
+    <header class="app-header">
+        <div class="brand">
+            <div class="brand-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+                </svg>
+            </div>
+            <div>
+                <h1>CryptoFlow-IDS</h1>
+            </div>
+            <span class="version-tag">v2.0 HUD</span>
+        </div>
+
+        <div class="header-controls">
+            <div id="threatBadge" class="threat-level-badge">
+                <span class="pulse-dot"></span>
+                <span id="threatText">NORMAL MONITOR</span>
+            </div>
+
+            <select id="ifaceSelect" class="iface-select" title="Select Network Interface">
+                <option value="">Auto-Detecting Interfaces...</option>
+            </select>
+
+            <button id="btnToggleEngine" class="btn btn-primary">START ENGINE</button>
+            <button id="btnSound" class="btn btn-secondary" title="Toggle cyber alert sound">🔊 Sound: ON</button>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <main class="dashboard-container">
+
+        <!-- Top Metrics Cards -->
+        <section class="metrics-row" aria-label="System Metrics">
+            <div class="glass-panel metric-card">
+                <div class="metric-icon" style="color: var(--primary);">📦</div>
+                <div class="metric-data">
+                    <h4>Packets Inspected</h4>
+                    <div id="valPackets" class="value">0</div>
+                    <div class="sub-text">Encrypted & Clear Payloads</div>
+                </div>
+            </div>
+
+            <div class="glass-panel metric-card threats">
+                <div class="metric-icon" style="color: var(--danger);">🚨</div>
+                <div class="metric-data">
+                    <h4>Threats Detected</h4>
+                    <div id="valThreats" class="value">0</div>
+                    <div class="sub-text">High-Entropy Exfiltrations</div>
+                </div>
+            </div>
+
+            <div class="glass-panel metric-card blocked">
+                <div class="metric-icon" style="color: var(--warning);">🛡️</div>
+                <div class="metric-data">
+                    <h4>Firewall Blocks</h4>
+                    <div id="valBlocked" class="value">0</div>
+                    <div class="sub-text">Active Kernel DROP Rules</div>
+                </div>
+            </div>
+
+            <div class="glass-panel metric-card quic">
+                <div class="metric-icon" style="color: #9b51e0;">⚡</div>
+                <div class="metric-data">
+                    <h4>Throughput Rate</h4>
+                    <div id="valPPS" class="value">0 pps</div>
+                    <div class="sub-text">Real-Time Ingestion Speed</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Real-Time Telemetry Charts Grid -->
+        <section class="charts-grid" aria-label="Telemetry Charts">
+            <div class="glass-panel chart-card">
+                <div class="card-header">
+                    <h3>📈 Real-Time Shannon Entropy Stream</h3>
+                    <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">
+                        Alert Threshold: <span style="color: var(--danger); font-weight: 600;">7.2</span>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="entropyChart"></canvas>
+                </div>
+            </div>
+
+            <div class="glass-panel chart-card">
+                <div class="card-header">
+                    <h3>🌐 Protocol Distribution</h3>
+                    <span id="connectionStatus" style="font-family: var(--font-mono); font-size: 11px; color: var(--safe);">CONNECTING...</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="protocolChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- 1-Click In-App Simulation Lab -->
+        <section class="glass-panel sim-panel" aria-label="Simulation Lab">
+            <div class="card-header">
+                <h3>🧪 Interactive Exfiltration Simulation Lab</h3>
+                <span style="color: var(--text-dim); font-size: 12px;">Test live detection & mitigation without opening external terminals</span>
+            </div>
+            <div class="sim-actions">
+                <button class="btn btn-secondary" onclick="runSim('tcp')">Simulate TCP Exfiltration</button>
+                <button class="btn btn-secondary" onclick="runSim('quic')">Simulate UDP / QUIC Exfiltration</button>
+                <button class="btn btn-primary" onclick="runSim('both')">⚡ Launch Full Hybrid Attack</button>
+            </div>
+            <div id="simStatus" class="sim-status-box">
+                [SIMULATOR] Ready. Select an attack scenario to test real-time detection & automated firewall blocking.
+            </div>
+        </section>
+
+        <!-- Split Grid: Live Threat Alerts & Live Flow Stream -->
+        <section class="content-grid" aria-label="Threat and Traffic Feeds">
+            
+            <!-- Live Threat Feed -->
+            <div class="glass-panel chart-card">
+                <div class="card-header">
+                    <h3>🚨 Real-Time Threat Alerts</h3>
+                    <span style="color: var(--text-muted); font-size: 12px;">ML + Side-Channel Heuristics</span>
+                </div>
+                <div id="threatFeedList" class="threat-feed-list">
+                    <div style="color: #4d5d75; text-align: center; padding: 20px;">
+                        Listening for incoming traffic flows...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Flow Stream Table -->
+            <div class="glass-panel chart-card">
+                <div class="card-header">
+                    <h3>📡 Live Packet Flows</h3>
+                    <span id="engineBadge" style="font-family: var(--font-mono); font-size: 11px; color: #8292ab;">ENGINE: READY</span>
+                </div>
+                <div class="traffic-table-wrapper">
+                    <table class="cyber-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Proto</th>
+                                <th>Src</th>
+                                <th>Dst</th>
+                                <th>Entropy</th>
+                                <th>Size</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="trafficTableBody">
+                            <!-- Dynamic rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Active Firewall Blocklist Table -->
+        <section class="glass-panel chart-card" aria-label="Firewall Blocklist">
+            <div class="card-header">
+                <h3>🛡️ Automated Firewall Mitigation Rules (Active Drops)</h3>
+                <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 12px;" onclick="fetchBlockedIps()">Refresh Rules</button>
+            </div>
+            <div class="traffic-table-wrapper">
+                <table class="cyber-table">
+                    <thead>
+                        <tr>
+                            <th>Blocked IP</th>
+                            <th>Timestamp</th>
+                            <th>Trigger Reason</th>
+                            <th>Firewall Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="blockedIpsBody">
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #4d5d75; padding: 20px;">
+                                No active firewall block rules.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- App Script -->
+    <script src="/static/js/dashboard.js"></script>
+</body>
+</html>

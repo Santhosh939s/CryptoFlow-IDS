@@ -1,16 +1,27 @@
 # Ignore virtual environment folder
 exfil_env/
+venv/
+.venv/
 
 # Ignore massive packet capture files
 *.pcap
 *.pcapng
 
-# Ignore the trained model (users should train their own)
+# Ignore the trained model (users should train their own or download via release)
 *.pkl
 
 # Ignore dataset CSVs
 *.csv
 
+# Local SQLite database
+cryptoflow.db
+
+# Build artifacts
+dist/
+build/Output/
+*.exe
+
 # Python cache
 __pycache__/
 *.pyc
+*.pyo
