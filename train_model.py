@@ -79,7 +79,7 @@ def train():
 
     model_filename = "traffic_classifier.pkl"
     joblib.dump(rf_model, model_filename)
-    print(f"✅ Model successfully saved as '{model_filename}'!")
+    print(f"[SUCCESS] Model successfully saved as '{model_filename}'!")
 
 if __name__ == "__main__":
     train()
