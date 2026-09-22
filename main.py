@@ -7,6 +7,15 @@ import webbrowser
 import uvicorn
 import logging
 
+# Ensure UTF-8 output across all Windows terminals
+try:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    if hasattr(sys.stderr, "reconfigure"):
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("CryptoFlowApp")
 
@@ -37,13 +46,13 @@ def run_server(port: int):
 
 def main():
     print("=" * 60)
-    print("      CryptoFlow-IDS — Next-Generation Cyber Defense App")
+    print("      CryptoFlow-IDS -- Next-Generation Cyber Defense App")
     print("=" * 60)
 
     if not is_admin():
-        print("\n⚠️  [NOTICE] Not running with Administrator / Root privileges.")
-        print("   Real-time packet sniffing and automated firewall mitigation")
-        print("   require Administrator rights to modify firewall rules.\n")
+        print("\n[!] [NOTICE] Not running with Administrator / Root privileges.")
+        print("    Real-time packet sniffing and automated firewall mitigation")
+        print("    require Administrator rights to modify firewall rules.\n")
 
     port = find_free_port(8000)
     app_url = f"http://127.0.0.1:{port}"
@@ -54,8 +63,8 @@ def main():
 
     # Wait for server to bind
     time.sleep(1.2)
-    print(f"\n🚀 CryptoFlow-IDS Server active at: {app_url}")
-    print("   Starting desktop interface...\n")
+    print(f"\n[*] CryptoFlow-IDS Server active at: {app_url}")
+    print("    Starting desktop interface...\n")
 
     # Try native desktop window via pywebview if available
     launched_native = False

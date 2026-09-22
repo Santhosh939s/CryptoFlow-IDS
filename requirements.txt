@@ -8,3 +8,4 @@ uvicorn>=0.20.0
 websockets>=10.0
 pydantic>=2.0.0
 pywebview>=4.0.0
+python-multipart>=0.0.6

@@ -221,12 +221,30 @@ function prependThreatCard(threat) {
         ? '<span class="pill pill-quic">QUIC (UDP)</span>' 
         : '<span class="pill pill-tcp">TCP</span>';
 
+    const flag = threat.flag || '🧪';
+    const country = threat.country || 'Local Lab / Simulation';
+    const asn = threat.asn || 'AS-PRIVATE';
+    const score = threat.threat_score || 85;
+    const pcapBtn = threat.pcap_file 
+        ? `<a href="/api/incidents/${threat.pcap_file}" download class="btn-pcap" title="Download Forensic PCAP for Wireshark">💾 PCAP</a>` 
+        : '';
+
     card.innerHTML = `
         <div class="threat-card-header">
-            <span class="threat-badge">🚨 THREAT DETECTED</span>
-            <span class="threat-time">${threat.datetime_str || 'Just now'}</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="threat-badge">🚨 THREAT DETECTED</span>
+                <span class="score-badge">SEV: ${score}/100</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                ${pcapBtn}
+                <span class="threat-time">${threat.datetime_str || 'Just now'}</span>
+            </div>
         </div>
         <div class="threat-details">
+            <div class="threat-field" style="grid-column: 1 / -1;">
+                <span>Threat Origin & Intelligence</span>
+                <span class="intel-badge">${flag} ${country} • <span style="font-family: var(--font-mono); color: var(--primary);">${asn}</span></span>
+            </div>
             <div class="threat-field">
                 <span>Source IP</span>
                 <span>${threat.src_ip}</span>
@@ -409,10 +427,118 @@ function toggleSound() {
     document.getElementById('btnSound').innerText = soundEnabled ? '🔊 Sound: ON' : '🔇 Sound: OFF';
 }
 
+// Phase 3: Scroll & Offline Forensic Studio Controllers
+function scrollToStudio() {
+    const el = document.getElementById('forensicStudioSection');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+
+function initOfflineStudio() {
+    const dropZone = document.getElementById('pcapDropZone');
+    const fileInput = document.getElementById('pcapFileInput');
+    if (!dropZone || !fileInput) return;
+
+    ['dragenter', 'dragover'].forEach(name => {
+        dropZone.addEventListener(name, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropZone.classList.add('dragover');
+        });
+    });
+
+    ['dragleave', 'drop'].forEach(name => {
+        dropZone.addEventListener(name, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropZone.classList.remove('dragover');
+        });
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            uploadAndAnalyzePcap(files[0]);
+        }
+    });
+
+    fileInput.addEventListener('change', (e) => {
+        if (fileInput.files.length > 0) {
+            uploadAndAnalyzePcap(fileInput.files[0]);
+        }
+    });
+}
+
+async function uploadAndAnalyzePcap(file) {
+    const loading = document.getElementById('pcapLoading');
+    const results = document.getElementById('offlineResults');
+    loading.style.display = 'block';
+    results.style.display = 'none';
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+        const res = await fetch('/api/pcap/analyze', {
+            method: 'POST',
+            body: formData
+        });
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.detail || 'Analysis failed');
+        }
+        const data = await res.json();
+        renderOfflineResults(data);
+    } catch (err) {
+        alert('PCAP Analysis Error: ' + err.message);
+    } finally {
+        loading.style.display = 'none';
+    }
+}
+
+function renderOfflineResults(data) {
+    document.getElementById('resTotalPkts').innerText = data.total_packets.toLocaleString();
+    document.getElementById('resPayloads').innerText = data.inspected_payloads.toLocaleString();
+    document.getElementById('resThreats').innerText = data.threat_count.toLocaleString();
+    document.getElementById('resSafe').innerText = data.safe_count.toLocaleString();
+    document.getElementById('resAvgEntropy').innerText = `${data.avg_entropy} / 8.0`;
+    document.getElementById('resQuic').innerText = data.quic_count.toLocaleString();
+
+    const tbody = document.getElementById('offlineTableBody');
+    tbody.innerHTML = '';
+    if (!data.threats || data.threats.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--safe); padding: 20px;">🛡️ Clean capture. No malicious high-entropy exfiltrations detected.</td></tr>';
+    } else {
+        data.threats.forEach(t => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${t.packet_num}</td>
+                <td><strong>${t.src_ip}</strong></td>
+                <td>${t.dst_ip}:${t.dst_port}</td>
+                <td><span class="pill ${t.protocol === 'QUIC' ? 'pill-quic' : 'pill-tcp'}">${t.protocol}</span></td>
+                <td style="color: var(--danger); font-weight: 600;">${t.entropy}</td>
+                <td>${t.confidence}%</td>
+                <td><span class="pill pill-threat">EXFILTRATION</span></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    document.getElementById('offlineResults').style.display = 'flex';
+    scrollToStudio();
+}
+
+function resetOfflineStudio() {
+    document.getElementById('offlineResults').style.display = 'none';
+    document.getElementById('offlineTableBody').innerHTML = '';
+    const fileInput = document.getElementById('pcapFileInput');
+    if (fileInput) fileInput.value = '';
+}
+
 // Page Load
 document.addEventListener('DOMContentLoaded', () => {
     initCharts();
     connectWebSocket();
+    initOfflineStudio();
 
     document.getElementById('btnToggleEngine').addEventListener('click', toggleEngine);
     document.getElementById('btnSound').addEventListener('click', toggleSound);

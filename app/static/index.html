@@ -36,6 +36,8 @@
             </select>
 
             <button id="btnToggleEngine" class="btn btn-primary">START ENGINE</button>
+            <a href="/api/reports/audit" target="_blank" class="btn btn-report" title="Generate and view Executive Security Incident Audit Report">📑 Audit Report</a>
+            <button class="btn btn-secondary" onclick="scrollToStudio()" title="Offline PCAP Drag-and-Drop Studio">📂 Forensic Studio</button>
             <button id="btnSound" class="btn btn-secondary" title="Toggle cyber alert sound">🔊 Sound: ON</button>
         </div>
     </header>
@@ -192,6 +194,80 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </section>
+
+        <!-- Phase 3: Offline PCAP Forensic Studio Section -->
+        <section id="forensicStudioSection" class="glass-panel offline-studio-box" aria-label="Offline PCAP Forensic Studio">
+            <div class="card-header">
+                <div>
+                    <h3>📂 Offline PCAP Forensic Studio</h3>
+                    <span style="color: var(--text-dim); font-size: 12px;">Batch inspect historical traffic captures with offline Random Forest and Shannon Entropy AI</span>
+                </div>
+                <button class="btn btn-secondary" style="font-size: 11px; padding: 4px 10px;" onclick="resetOfflineStudio()">Clear Studio</button>
+            </div>
+
+            <!-- Drag & Drop Area -->
+            <div id="pcapDropZone" class="drop-zone" onclick="document.getElementById('pcapFileInput').click()">
+                <input type="file" id="pcapFileInput" accept=".pcap,.pcapng,.cap" style="display: none;">
+                <div class="drop-zone-icon">📥</div>
+                <h4>Drag & Drop PCAP Capture File Here</h4>
+                <p>Upload any <strong>.pcap</strong> or <strong>.pcapng</strong> file to run full in-depth Shannon Entropy extraction and machine learning intrusion classification.</p>
+                <button class="btn btn-primary" style="margin-top: 6px;" onclick="event.stopPropagation(); document.getElementById('pcapFileInput').click();">Browse Local File</button>
+            </div>
+
+            <div id="pcapLoading" style="display: none; text-align: center; padding: 25px; font-family: var(--font-mono); color: var(--primary);">
+                <span class="pulse-dot"></span> Processing PCAP capture... Calculating Shannon Entropy & extracting feature vectors...
+            </div>
+
+            <!-- Results Box -->
+            <div id="offlineResults" class="offline-results">
+                <div class="offline-metrics-grid">
+                    <div class="offline-metric-card">
+                        <h5>Total Packets</h5>
+                        <div id="resTotalPkts" class="val">0</div>
+                    </div>
+                    <div class="offline-metric-card">
+                        <h5>Payloads Evaluated</h5>
+                        <div id="resPayloads" class="val">0</div>
+                    </div>
+                    <div class="offline-metric-card" style="border-left: 3px solid var(--danger);">
+                        <h5>Exfiltrations Flagged</h5>
+                        <div id="resThreats" class="val" style="color: var(--danger);">0</div>
+                    </div>
+                    <div class="offline-metric-card" style="border-left: 3px solid var(--safe);">
+                        <h5>Safe Flows</h5>
+                        <div id="resSafe" class="val" style="color: var(--safe);">0</div>
+                    </div>
+                    <div class="offline-metric-card">
+                        <h5>Mean Entropy</h5>
+                        <div id="resAvgEntropy" class="val">0.00</div>
+                    </div>
+                    <div class="offline-metric-card">
+                        <h5>QUIC / UDP Volume</h5>
+                        <div id="resQuic" class="val" style="color: #bb6bd9;">0</div>
+                    </div>
+                </div>
+
+                <!-- Forensic Breakdown Table -->
+                <div class="traffic-table-wrapper" style="max-height: 250px;">
+                    <table class="cyber-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Source IP</th>
+                                <th>Target IP:Port</th>
+                                <th>Protocol</th>
+                                <th>Shannon Entropy</th>
+                                <th>Confidence</th>
+                                <th>Classification</th>
+                            </tr>
+                        </thead>
+                        <tbody id="offlineTableBody">
+                            <!-- Rows populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </section>
 

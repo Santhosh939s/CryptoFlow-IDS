@@ -41,6 +41,10 @@ As cyber threats evolve, attackers increasingly use encrypted protocols (**HTTPS
 - 🌐 **UDP / QUIC (RFC 9000) Detection**: Inspects HTTP/3 QUIC traffic on UDP ports 443/8443 by validating fixed-bit markers and header structures.
 - 🧪 **1-Click In-App Simulation Lab**: Built-in exfiltration test engine that allows examiners and developers to trigger simulated TCP and QUIC attacks directly from the GUI without opening extra terminal windows.
 - 💾 **SQLite Incident Database**: Embedded persistent database (`cryptoflow.db`) storing audit trails, threat scores, and active firewall blocklists with one-click unblocking.
+- 📁 **Automated Forensic Incident PCAP Dumper**: Automatically captures raw offending packet buffers on threat detection into Wireshark-ready PCAPs (`incidents/*.pcap`) for instant offline evidence validation.
+- 🌐 **Threat Intelligence & IP Geolocation**: Automatically enriches attacker IPs with Autonomous System (ASN), country, flag, and Threat Severity Scores (0–100) displayed directly on alert cards.
+- 📑 **Executive Security Audit Report Generator**: 1-Click generation of a styled, printable Incident Audit Report with cryptographic SHA-256 integrity seal for corporate compliance and academic vivas.
+- 📂 **Offline PCAP Drag-and-Drop Studio**: Allows analysts to drag-and-drop saved network captures directly into the Cyber HUD for instant batch Shannon Entropy profiling and AI threat classification.
 
 ---
 
@@ -48,17 +52,27 @@ As cyber threats evolve, attackers increasingly use encrypted protocols (**HTTPS
 
 ```mermaid
 graph TD
-    subgraph Windows / Linux Host
+    subgraph Core Capture & AI Engine [Isolated OS Process]
         NIC[Physical Adapter / Npcap Loopback] --> SNIFF[Sniffer Process: app/engine.py]
         SNIFF --> FEAT[Feature Extractor: Shannon Entropy, Size, DstPort, QUIC]
         FEAT --> RF[Random Forest AI Engine: traffic_classifier.pkl]
         RF --> MIT[Firewall Mitigation: Windows Defender netsh / iptables]
         RF --> IPC[IPC Multiprocessing Queue]
+    end
 
+    subgraph Forensic & Intelligence Services
+        RF --> FOR[Forensics: app/forensics.py -> incidents/*.pcap]
+        RF --> INTEL[Threat Intel: app/intel.py -> GeoIP & ASN]
+        FOR --> DB[(SQLite: cryptoflow.db)]
+        INTEL --> DB
+        DB --> REP[Audit Generator: app/reports.py]
+    end
+
+    subgraph Cyber HUD GUI [FastAPI + WebSockets]
         IPC --> API[FastAPI + WebSocket Server: app/server.py]
-        API --> DB[(SQLite: cryptoflow.db)]
-        API -->|Real-Time Telemetry Stream| HUD[Cyber HUD Desktop Window / Browser]
-
+        API --> HUD[Cyber HUD Desktop Window / Browser]
+        HUD --> OFFLINE[Offline PCAP Drag & Drop Studio]
+        HUD --> REP_VIEW[1-Click Executive PDF/HTML Report]
         SIM[In-App Simulator: app/simulator.py] -->|1-Click Exfiltration| NIC
     end
 ```

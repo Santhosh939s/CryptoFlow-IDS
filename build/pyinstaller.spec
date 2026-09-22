@@ -33,6 +33,8 @@ a = Analysis(
         'sklearn',
         'sklearn.ensemble',
         'joblib',
+        'multipart',
+        'python_multipart',
     ],
     hookspath=[],
     hooksconfig={},

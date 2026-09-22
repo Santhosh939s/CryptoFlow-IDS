@@ -2,9 +2,9 @@ import os
 import sys
 import asyncio
 from typing import List, Dict, Any, Optional
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException, UploadFile, File
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, HTMLResponse
 from pydantic import BaseModel
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -14,6 +14,9 @@ if ROOT_DIR not in sys.path:
 from app.database import db
 from app.engine import engine
 from app.simulator import simulator
+from app.forensics import forensics
+from app.intel import intel_provider
+from app.reports import report_generator
 
 app = FastAPI(title="CryptoFlow-IDS API", version="2.0.0")
 
@@ -146,6 +149,60 @@ async def run_simulation(req: SimReq):
     if not started:
         raise HTTPException(status_code=400, detail="Simulation already running.")
     return {"status": "simulation_started", "mode": req.mode}
+
+# --- Phase 3 Forensics, Threat Intel & Reporting Endpoints ---
+
+@app.get("/api/reports/audit", response_class=HTMLResponse)
+async def get_audit_report():
+    """Generates an executive forensic security incident audit report."""
+    html = report_generator.generate_html_report()
+    return HTMLResponse(content=html, status_code=200)
+
+@app.get("/api/incidents")
+async def list_incident_pcaps():
+    """Returns list of captured incident PCAP files available for forensic download."""
+    return forensics.get_incident_files()
+
+@app.get("/api/incidents/{filename}")
+async def download_incident_pcap(filename: str):
+    """Downloads a raw forensic PCAP file for inspection in Wireshark."""
+    filepath = forensics.get_filepath(filename)
+    if not filepath or not os.path.exists(filepath):
+        raise HTTPException(status_code=404, detail="Incident PCAP not found.")
+    return FileResponse(filepath, media_type="application/vnd.tcpdump.pcap", filename=filename)
+
+@app.post("/api/pcap/analyze")
+async def analyze_uploaded_pcap(file: UploadFile = File(...)):
+    """
+    Offline PCAP Analysis Studio:
+    Accepts user-uploaded .pcap/.pcapng file and performs full Random Forest
+    threat inference and Shannon entropy profiling.
+    """
+    if not file.filename.lower().endswith((".pcap", ".pcapng", ".cap")):
+        raise HTTPException(status_code=400, detail="Invalid file format. Upload .pcap or .pcapng files.")
+
+    import shutil
+    import tempfile
+
+    temp_dir = tempfile.gettempdir()
+    safe_name = f"analyze_{os.path.basename(file.filename)}"
+    temp_path = os.path.join(temp_dir, safe_name)
+
+    try:
+        with open(temp_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+
+        analysis = forensics.analyze_pcap_file(temp_path)
+        analysis["filename"] = file.filename
+        return analysis
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error analyzing PCAP: {e}")
+    finally:
+        if os.path.exists(temp_path):
+            try:
+                os.remove(temp_path)
+            except Exception:
+                pass
 
 @app.websocket("/ws/telemetry")
 async def websocket_endpoint(websocket: WebSocket):

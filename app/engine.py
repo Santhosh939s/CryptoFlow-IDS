@@ -13,6 +13,8 @@ if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
 
 from app.database import db
+from app.forensics import forensics
+from app.intel import intel_provider
 
 if sys.platform == "win32":
     from windows_mitigation import WindowsFirewallMitigator as Mitigator
@@ -128,7 +130,8 @@ def _sniffer_process_worker(iface_target, event_queue: multiprocessing.Queue, st
                         "payload_len": len(payload),
                         "is_quic": quic_flag,
                         "is_threat": is_threat,
-                        "confidence": round(confidence * 100, 1)
+                        "confidence": round(confidence * 100, 1),
+                        "payload_sample": payload[:1500] if is_threat else b""
                     }
                 })
 
@@ -341,13 +344,34 @@ class IDSEngine:
         is_quic_flag = data.get("is_quic", False)
         confidence = data.get("confidence", 95.0) / 100.0
 
-        # Execute firewall mitigation with atomic caching
+        payload_sample = data.get("payload_sample", b"")
+
+        # 1. Threat Intelligence & IP Enrichment
+        intel = intel_provider.enrich_ip(src_ip, entropy)
+        country = intel.get("country", "Local Lab / Simulation")
+        country_code = intel.get("country_code", "LOC")
+        flag = intel.get("flag", "🧪")
+        asn = intel.get("asn", "AS-PRIVATE")
+        threat_score = intel.get("threat_score", 85)
+
+        # 2. Execute firewall mitigation with atomic caching
         mitigated = self.mitigator.block_ip(src_ip)
         if mitigated:
             self.stats["blocked_count"] += 1
             db.log_blocked_ip(src_ip, reason=f"High-entropy exfiltration ({entropy:.2f})")
 
-        # Persist to SQLite
+        # 3. Automated Forensic Incident PCAP Capture
+        now_ts = int(time.time())
+        pcap_file = forensics.record_incident_packet(
+            threat_id=now_ts,
+            packet_bytes=payload_sample,
+            src_ip=src_ip,
+            dst_ip=dst_ip,
+            dst_port=port,
+            protocol=protocol
+        )
+
+        # 4. Persist to SQLite
         threat_id = db.log_threat(
             src_ip=src_ip,
             dst_ip=dst_ip,
@@ -358,7 +382,13 @@ class IDSEngine:
             protocol=protocol,
             is_quic=is_quic_flag,
             confidence=confidence,
-            mitigated=mitigated
+            mitigated=mitigated,
+            country=country,
+            country_code=country_code,
+            flag=flag,
+            asn=asn,
+            threat_score=threat_score,
+            pcap_file=pcap_file
         )
 
         threat_alert = {
@@ -376,7 +406,13 @@ class IDSEngine:
                 "protocol": protocol,
                 "is_quic": is_quic_flag,
                 "confidence": round(confidence * 100, 1),
-                "mitigated": mitigated
+                "mitigated": mitigated,
+                "country": country,
+                "country_code": country_code,
+                "flag": flag,
+                "asn": asn,
+                "threat_score": threat_score,
+                "pcap_file": pcap_file
             }
         }
         self._broadcast(threat_alert)

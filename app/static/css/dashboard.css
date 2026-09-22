@@ -530,3 +530,139 @@ table.cyber-table tr:hover td {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--primary);
 }
+
+/* --- Phase 3 Forensics & Threat Intel UI Additions --- */
+
+.btn-report {
+    background: linear-gradient(135deg, #0984e3 0%, #00cec9 100%);
+    color: #ffffff !important;
+    border: none;
+    box-shadow: 0 0 15px rgba(9, 132, 227, 0.4);
+    font-weight: 700;
+}
+
+.btn-report:hover {
+    box-shadow: 0 0 25px rgba(0, 206, 201, 0.6);
+    transform: translateY(-1px);
+}
+
+.btn-pcap {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(155, 81, 224, 0.2);
+    border: 1px solid rgba(155, 81, 224, 0.5);
+    color: #bb6bd9;
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.btn-pcap:hover {
+    background: rgba(155, 81, 224, 0.4);
+    box-shadow: 0 0 10px rgba(155, 81, 224, 0.5);
+    color: #ffffff;
+}
+
+.score-badge {
+    background: rgba(255, 42, 95, 0.2);
+    border: 1px solid rgba(255, 42, 95, 0.6);
+    color: var(--danger);
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+}
+
+.intel-badge {
+    font-size: 11px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Offline Forensic PCAP Studio */
+.offline-studio-box {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.drop-zone {
+    border: 2px dashed rgba(0, 242, 254, 0.35);
+    border-radius: var(--radius-md);
+    background: rgba(12, 20, 36, 0.4);
+    padding: 36px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.drop-zone:hover, .drop-zone.dragover {
+    border-color: var(--primary);
+    background: rgba(0, 242, 254, 0.08);
+    box-shadow: 0 0 25px rgba(0, 242, 254, 0.2);
+}
+
+.drop-zone-icon {
+    font-size: 38px;
+}
+
+.drop-zone h4 {
+    font-family: var(--font-hud);
+    font-size: 18px;
+    letter-spacing: 0.5px;
+    color: var(--text-main);
+}
+
+.drop-zone p {
+    font-size: 12px;
+    color: var(--text-muted);
+    max-width: 500px;
+}
+
+.offline-results {
+    display: none;
+    flex-direction: column;
+    gap: 16px;
+    animation: slide-in 0.35s ease;
+}
+
+.offline-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+}
+
+.offline-metric-card {
+    background: rgba(18, 28, 48, 0.7);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+}
+
+.offline-metric-card h5 {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.offline-metric-card .val {
+    font-family: var(--font-hud);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-main);
+}
