@@ -2,14 +2,17 @@
 
 block_cipher = None
 
+import os
+
+extra_datas = [('../app/static', 'app/static')]
+if os.path.exists('../traffic_classifier.pkl'):
+    extra_datas.append(('../traffic_classifier.pkl', '.'))
+
 a = Analysis(
     ['../main.py'],
     pathex=['..'],
     binaries=[],
-    datas=[
-        ('../app/static', 'app/static'),
-        ('../traffic_classifier.pkl', '.'),
-    ],
+    datas=extra_datas,
     hiddenimports=[
         'uvicorn.logging',
         'uvicorn.loops',

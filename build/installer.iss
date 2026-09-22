@@ -17,6 +17,7 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
 DisableProgramGroupPage=yes
+OutputDir=Output
 OutputBaseFilename=CryptoFlow-IDS-Setup
 Compression=lzma
 SolidCompression=yes
