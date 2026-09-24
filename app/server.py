@@ -51,14 +51,18 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
-# Background task to pipe sync engine events into async WebSocket broadcaster
-event_queue = asyncio.Queue()
+# Background task to pipe sync engine events into async WebSocket broadcaster (bounded buffer)
+event_queue = asyncio.Queue(maxsize=1000)
 
 def sync_event_listener(event: Dict[str, Any]):
     try:
-        # Schedule put on main event loop if available
         loop = getattr(app.state, "event_loop", None)
         if loop and loop.is_running():
+            if event_queue.full():
+                try:
+                    event_queue.get_nowait()
+                except Exception:
+                    pass
             asyncio.run_coroutine_threadsafe(event_queue.put(event), loop)
     except Exception:
         pass

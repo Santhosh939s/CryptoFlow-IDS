@@ -8,12 +8,24 @@ from typing import Set
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("WindowsMitigator")
 
+import atexit
+import socket
+
 # Reserved and loopback IPs protected from accidental blocking
 SAFE_WHITELIST: Set[str] = {
     "127.0.0.1",
     "::1",
     "0.0.0.0",
+    "255.255.255.255",
 }
+
+# Auto-discover local adapter IPs to prevent blocking the host computer
+try:
+    _hostname = socket.gethostname()
+    for _ip in socket.gethostbyname_ex(_hostname)[2]:
+        SAFE_WHITELIST.add(_ip)
+except Exception:
+    pass
 
 class WindowsFirewallMitigator:
     """
@@ -28,6 +40,8 @@ class WindowsFirewallMitigator:
         self.cooldown_ips: dict = {} # ip -> retry_after_timestamp
         self._lock = threading.Lock()
         self.enable_loopback_block = enable_loopback_block
+        # Register automatic cleanup of firewall rules when app exits
+        atexit.register(self.cleanup)
 
     def _rule_name(self, ip: str) -> str:
         """Standardized firewall rule display name for CryptoFlow blocks."""
