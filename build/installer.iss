@@ -23,6 +23,7 @@ Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
 PrivilegesRequired=admin
+SetupIconFile=..\app\static\icon.ico
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"

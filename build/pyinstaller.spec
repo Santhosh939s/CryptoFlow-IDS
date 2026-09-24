@@ -62,6 +62,7 @@ exe = EXE(
     upx=True,
     console=False, # Pure Windows native GUI (no black console window)
     uac_admin=True, # Enforce Windows UAC Administrator elevation manifest
+    icon='../app/static/icon.ico',
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
