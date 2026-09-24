@@ -208,6 +208,64 @@ async def analyze_uploaded_pcap(file: UploadFile = File(...)):
             except Exception:
                 pass
 
+CURRENT_VERSION = "2.1.0"
+
+@app.get("/api/version/check")
+async def check_for_updates():
+    """
+    Checks GitHub Releases API to see if a newer version of CryptoFlow-IDS
+    has been published. Returns update status, download URL, and release notes.
+    """
+    import urllib.request
+    import json
+
+    result = {
+        "current_version": f"v{CURRENT_VERSION}",
+        "latest_version": f"v{CURRENT_VERSION}",
+        "update_available": False,
+        "download_url": f"https://github.com/Santhosh939s/CryptoFlow-IDS/releases/download/v{CURRENT_VERSION}/CryptoFlow-IDS-Setup.exe",
+        "release_url": f"https://github.com/Santhosh939s/CryptoFlow-IDS/releases/tag/v{CURRENT_VERSION}",
+        "release_name": f"v{CURRENT_VERSION}"
+    }
+
+    try:
+        url = "https://api.github.com/repos/Santhosh939s/CryptoFlow-IDS/releases/latest"
+        req = urllib.request.Request(url, headers={"User-Agent": f"CryptoFlow-IDS/{CURRENT_VERSION}"})
+
+        loop = asyncio.get_running_loop()
+        def _fetch():
+            with urllib.request.urlopen(req, timeout=2.5) as resp:
+                if resp.status == 200:
+                    return json.loads(resp.read().decode('utf-8'))
+            return None
+
+        data = await loop.run_in_executor(None, _fetch)
+        if data and "tag_name" in data:
+            latest_tag = data["tag_name"].strip()
+            latest_clean = latest_tag.lstrip("v").strip()
+            current_clean = CURRENT_VERSION.lstrip("v").strip()
+
+            def parse_ver(v_str):
+                return [int(x) for x in v_str.split(".") if x.isdigit()]
+
+            is_newer = parse_ver(latest_clean) > parse_ver(current_clean)
+
+            setup_download_url = data.get("html_url")
+            for asset in data.get("assets", []):
+                if asset.get("name", "").endswith("-Setup.exe"):
+                    setup_download_url = asset.get("browser_download_url")
+                    break
+
+            result["latest_version"] = latest_tag
+            result["update_available"] = is_newer
+            result["download_url"] = setup_download_url
+            result["release_url"] = data.get("html_url")
+            result["release_name"] = data.get("name", latest_tag)
+    except Exception:
+        pass
+
+    return result
+
 @app.websocket("/ws/telemetry")
 async def websocket_endpoint(websocket: WebSocket):
     await manager.connect(websocket)

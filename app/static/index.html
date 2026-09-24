@@ -45,6 +45,18 @@
     <!-- Main Dashboard -->
     <main class="dashboard-container">
 
+        <!-- New Release Update Notification Banner -->
+        <div id="updateBanner" class="update-banner" style="display: none;">
+            <div class="update-content">
+                <span class="pulse-dot" style="background: var(--safe); box-shadow: 0 0 10px var(--safe);"></span>
+                <span>🚀 <strong>Update Available:</strong> <span id="latestVerText">v2.x.x</span> is ready!</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <a id="btnDownloadUpdate" href="#" target="_blank" class="btn btn-primary" style="padding: 5px 14px; font-size: 11px; text-decoration: none;">Download Update (.exe)</a>
+                <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="dismissUpdateBanner()">✕</button>
+            </div>
+        </div>
+
         <!-- Top Metrics Cards -->
         <section class="metrics-row" aria-label="System Metrics">
             <div class="glass-panel metric-card">

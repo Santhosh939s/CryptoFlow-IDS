@@ -558,11 +558,31 @@ function resetOfflineStudio() {
     if (fileInput) fileInput.value = '';
 }
 
+// Auto-Update Checker
+async function checkForAppUpdates() {
+    try {
+        const res = await fetch('/api/version/check');
+        const data = await res.json();
+        if (data.update_available) {
+            document.getElementById('latestVerText').innerText = data.latest_version;
+            document.getElementById('btnDownloadUpdate').href = data.download_url || data.release_url;
+            document.getElementById('updateBanner').style.display = 'flex';
+        }
+    } catch (e) {
+        // Silently skip if offline
+    }
+}
+
+function dismissUpdateBanner() {
+    document.getElementById('updateBanner').style.display = 'none';
+}
+
 // Page Load
 document.addEventListener('DOMContentLoaded', () => {
     initCharts();
     connectWebSocket();
     initOfflineStudio();
+    checkForAppUpdates();
 
     document.getElementById('btnToggleEngine').addEventListener('click', toggleEngine);
     document.getElementById('btnSound').addEventListener('click', toggleSound);

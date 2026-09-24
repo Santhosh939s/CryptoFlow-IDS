@@ -666,3 +666,26 @@ table.cyber-table tr:hover td {
     font-weight: 700;
     color: var(--text-main);
 }
+
+/* In-App Release Update Notification Banner */
+.update-banner {
+    background: linear-gradient(90deg, rgba(0, 240, 144, 0.15) 0%, rgba(0, 242, 254, 0.1) 100%);
+    border: 1px solid var(--safe);
+    border-radius: var(--radius-md);
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    box-shadow: 0 0 20px rgba(0, 240, 144, 0.2);
+    animation: slide-in 0.4s ease;
+}
+
+.update-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--text-main);
+}
+
