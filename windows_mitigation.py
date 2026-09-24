@@ -11,6 +11,8 @@ logger = logging.getLogger("WindowsMitigator")
 import atexit
 import socket
 
+CREATE_NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0x08000000)
+
 # Reserved and loopback IPs protected from accidental blocking
 SAFE_WHITELIST: Set[str] = {
     "127.0.0.1",
@@ -63,7 +65,8 @@ class WindowsFirewallMitigator:
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
-                timeout=3
+                timeout=3,
+                creationflags=CREATE_NO_WINDOW
             )
             is_present = result.returncode == 0 and "No rules match" not in result.stdout
             if is_present:
@@ -111,7 +114,8 @@ class WindowsFirewallMitigator:
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
-                timeout=5
+                timeout=5,
+                creationflags=CREATE_NO_WINDOW
             )
 
             with self._lock:
@@ -151,7 +155,8 @@ class WindowsFirewallMitigator:
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
-                timeout=5
+                timeout=5,
+                creationflags=CREATE_NO_WINDOW
             )
             logger.info(f"Unblocked IP: {ip}")
             return result.returncode == 0

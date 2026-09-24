@@ -7,6 +7,21 @@ import webbrowser
 import uvicorn
 import logging
 
+# In windowed mode (console=False in PyInstaller), sys.stdout and sys.stderr are None
+if sys.stdout is None:
+    try:
+        log_path = os.path.join(os.environ.get("TEMP", "."), "cryptoflow_stdout.log")
+        sys.stdout = open(log_path, "a", encoding="utf-8", buffering=1)
+    except Exception:
+        sys.stdout = open(os.devnull, "w", encoding="utf-8")
+
+if sys.stderr is None:
+    try:
+        log_path = os.path.join(os.environ.get("TEMP", "."), "cryptoflow_stderr.log")
+        sys.stderr = open(log_path, "a", encoding="utf-8", buffering=1)
+    except Exception:
+        sys.stderr = open(os.devnull, "w", encoding="utf-8")
+
 # Ensure UTF-8 output across all Windows terminals
 try:
     if hasattr(sys.stdout, "reconfigure"):
@@ -103,4 +118,7 @@ def main():
     print("Clean shutdown complete. Goodbye!")
 
 if __name__ == "__main__":
+    import multiprocessing
+    # CRITICAL: freeze_support() MUST be called first on Windows for PyInstaller multiprocessing
+    multiprocessing.freeze_support()
     main()

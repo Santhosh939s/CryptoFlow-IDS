@@ -2,7 +2,7 @@
 ; Produces CryptoFlow-IDS-Setup.exe for GitHub Releases
 
 #define MyAppName "CryptoFlow-IDS"
-#define MyAppVersion "2.1.0"
+#define MyAppVersion "2.1.1"
 #define MyAppPublisher "CryptoFlow Security"
 #define MyAppURL "https://github.com/Santhosh939s/CryptoFlow-IDS"
 #define MyAppExeName "CryptoFlow-IDS.exe"
@@ -38,7 +38,7 @@ Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent shellexec
 
 [Code]
 function InitializeSetup(): Boolean;

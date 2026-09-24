@@ -208,7 +208,7 @@ async def analyze_uploaded_pcap(file: UploadFile = File(...)):
             except Exception:
                 pass
 
-CURRENT_VERSION = "2.1.0"
+CURRENT_VERSION = "2.1.1"
 
 @app.get("/api/version/check")
 async def check_for_updates():

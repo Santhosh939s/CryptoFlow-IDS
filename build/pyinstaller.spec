@@ -35,6 +35,8 @@ a = Analysis(
         'joblib',
         'multipart',
         'python_multipart',
+        'multiprocessing',
+        'webview',
     ],
     hookspath=[],
     hooksconfig={},
@@ -58,7 +60,7 @@ exe = EXE(
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
-    console=True, # Keeps console visible for sniffing logs and admin elevation
+    console=False, # Pure Windows native GUI (no black console window)
     uac_admin=True, # Enforce Windows UAC Administrator elevation manifest
     disable_windowed_traceback=False,
     argv_emulation=False,
